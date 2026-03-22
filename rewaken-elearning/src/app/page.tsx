@@ -119,8 +119,6 @@ export default function Home() {
                       {/* Section count */}
                       <div className="mt-4 pt-4 border-t border-black/[0.04] flex items-center gap-4 text-xs text-gray-400">
                         <span>{mod.sections.length} sections</span>
-                        <span>•</span>
-                        <span>{mod.slides.length} slides</span>
                         {mod.sections.some(s => s.type === "video") && (
                           <>
                             <span>•</span>

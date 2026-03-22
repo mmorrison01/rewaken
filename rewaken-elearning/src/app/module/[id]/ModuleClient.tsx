@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { modules, type Module as ModuleType } from "@/data/modules";
+import { modules } from "@/data/modules";
 import Link from "next/link";
 import Image from "next/image";
 
@@ -11,7 +11,6 @@ function VideoPlaceholder({ title, moduleColor }: { title: string; moduleColor: 
       className="relative w-full rounded-xl overflow-hidden shadow-lg"
       style={{ aspectRatio: "16/9", background: `linear-gradient(135deg, ${moduleColor}, ${moduleColor}dd, ${moduleColor}99)` }}
     >
-      {/* Decorative dots */}
       <div className="absolute inset-0 opacity-[0.07]">
         <svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
           <defs>
@@ -22,8 +21,6 @@ function VideoPlaceholder({ title, moduleColor }: { title: string; moduleColor: 
           <rect width="100%" height="100%" fill="url(#vidgrid)" />
         </svg>
       </div>
-
-      {/* Play button */}
       <div className="absolute inset-0 flex flex-col items-center justify-center gap-4">
         <div className="w-20 h-20 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center border border-white/30">
           <svg width="32" height="32" viewBox="0 0 24 24" fill="white" className="ml-1">
@@ -35,63 +32,24 @@ function VideoPlaceholder({ title, moduleColor }: { title: string; moduleColor: 
           <p className="text-white/50 text-xs mt-1">Video coming soon</p>
         </div>
       </div>
-
       <div className="absolute bottom-0 left-0 right-0 h-1 bg-white/10" />
     </div>
   );
 }
 
-function SlideCarousel({ slides, color }: { slides: string[]; color: string }) {
-  const [current, setCurrent] = useState(0);
-  const displaySlides = slides.length > 1 ? slides.slice(1) : slides;
-
-  if (displaySlides.length === 0) return null;
-
+function SectionSlide({ src, alt }: { src: string; alt: string }) {
   return (
-    <div className="mb-10">
-      <div className="relative rounded-xl overflow-hidden shadow-lg bg-white">
-        <div className="relative" style={{ aspectRatio: "16/9" }}>
-          <Image
-            src={displaySlides[current]}
-            alt={`Slide ${current + 1}`}
-            fill
-            className="object-contain"
-            sizes="(max-width: 768px) 100vw, 800px"
-            priority={current === 0}
-          />
-        </div>
-        {displaySlides.length > 1 && (
-          <>
-            <button
-              onClick={() => setCurrent((p) => (p - 1 + displaySlides.length) % displaySlides.length)}
-              className="absolute left-3 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-black/30 hover:bg-black/50 backdrop-blur-sm flex items-center justify-center transition-colors"
-            >
-              <svg width="18" height="18" viewBox="0 0 16 16" fill="none"><path d="M10 12l-4-4 4-4" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
-            </button>
-            <button
-              onClick={() => setCurrent((p) => (p + 1) % displaySlides.length)}
-              className="absolute right-3 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-black/30 hover:bg-black/50 backdrop-blur-sm flex items-center justify-center transition-colors"
-            >
-              <svg width="18" height="18" viewBox="0 0 16 16" fill="none"><path d="M6 4l4 4-4 4" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
-            </button>
-          </>
-        )}
+    <div className="mb-8 rounded-xl overflow-hidden shadow-lg bg-white">
+      <div className="relative" style={{ aspectRatio: "16/9" }}>
+        <Image
+          src={src}
+          alt={alt}
+          fill
+          className="object-contain transition-opacity duration-500"
+          sizes="(max-width: 768px) 100vw, 800px"
+          priority
+        />
       </div>
-      {displaySlides.length > 1 && (
-        <div className="flex justify-center gap-2 mt-4">
-          {displaySlides.map((_, i) => (
-            <button
-              key={i}
-              onClick={() => setCurrent(i)}
-              className="w-2 h-2 rounded-full transition-all duration-300"
-              style={{
-                background: i === current ? color : "rgba(0,0,0,0.12)",
-                transform: i === current ? "scale(1.3)" : "scale(1)",
-              }}
-            />
-          ))}
-        </div>
-      )}
     </div>
   );
 }
@@ -116,23 +74,23 @@ function renderContent(content: string) {
               </p>
             );
           }
-          if (line.startsWith("□") || line.startsWith("☐")) {
+          if (line.startsWith("\u25a1") || line.startsWith("\u2610")) {
             return (
               <label key={j} className="flex items-start gap-3 py-1.5 cursor-pointer group">
                 <input type="checkbox" className="mt-1 w-4 h-4 rounded border-gray-300 accent-[#457B8D]" />
-                <span className="text-sm leading-relaxed group-hover:text-gray-700">{line.replace(/^[□☐]\s*/, "")}</span>
+                <span className="text-sm leading-relaxed group-hover:text-gray-700">{line.replace(/^[\u25a1\u2610]\s*/, "")}</span>
               </label>
             );
           }
-          if (line.startsWith("• ") || line.startsWith("- ")) {
+          if (line.startsWith("\u2022 ") || line.startsWith("- ")) {
             return (
               <div key={j} className="flex items-start gap-2 py-0.5 ml-2">
                 <span className="mt-2 w-1.5 h-1.5 rounded-full shrink-0" style={{ background: "var(--rewaken-teal)" }} />
-                <span className="text-sm leading-relaxed">{line.replace(/^[•\-]\s*/, "")}</span>
+                <span className="text-sm leading-relaxed">{line.replace(/^[\u2022\-]\s*/, "")}</span>
               </div>
             );
           }
-          if (/^[❗✔✅💉💧🚶🥗🤒💬💡⭐🧠]/.test(line)) {
+          if (/^[\u2757\u2714\u2705\u{1F489}\u{1F4A7}\u{1F6B6}\u{1F957}\u{1F912}\u{1F4AC}\u{1F4A1}\u2B50\u{1F9E0}]/u.test(line)) {
             return <p key={j} className="text-sm leading-relaxed py-0.5">{line}</p>;
           }
           if (line.trim()) {
@@ -161,6 +119,12 @@ export default function ModuleClient({ moduleId }: { moduleId: number }) {
   useEffect(() => {
     setSectionsVisited((prev) => new Set([...prev, activeSection]));
   }, [activeSection]);
+
+  // Reset section when navigating between modules
+  useEffect(() => {
+    setActiveSection(0);
+    setSectionsVisited(new Set([0]));
+  }, [moduleId]);
 
   const markComplete = () => {
     if (!mod) return;
@@ -198,16 +162,16 @@ export default function ModuleClient({ moduleId }: { moduleId: number }) {
           <div className="text-xs text-gray-400 hidden md:block">
             <span className="italic" style={{ fontFamily: "'Cormorant Garamond', serif" }}>re</span>
             <span className="font-medium">waken</span>
-            <span className="ml-1">— GLP-1 Knowledge &amp; Side Effects</span>
+            <span className="ml-1">&mdash; GLP-1 Knowledge &amp; Side Effects</span>
           </div>
           <div className="flex items-center gap-2">
             {prevMod && (
-              <Link href={`/module/${prevMod.id}`} className="w-8 h-8 rounded-full flex items-center justify-center hover:bg-black/[0.04] transition-colors">
+              <Link href={`/module/${prevMod.id}`} className="w-8 h-8 rounded-full flex items-center justify-center hover:bg-black/[0.04] transition-colors" title={`Module ${prevMod.id}`}>
                 <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M10 12l-4-4 4-4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
               </Link>
             )}
             {nextMod && (
-              <Link href={`/module/${nextMod.id}`} className="w-8 h-8 rounded-full flex items-center justify-center hover:bg-black/[0.04] transition-colors">
+              <Link href={`/module/${nextMod.id}`} className="w-8 h-8 rounded-full flex items-center justify-center hover:bg-black/[0.04] transition-colors" title={`Module ${nextMod.id}`}>
                 <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M6 4l4 4-4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
               </Link>
             )}
@@ -254,7 +218,7 @@ export default function ModuleClient({ moduleId }: { moduleId: number }) {
                         )}
                       </span>
                       <span className="leading-snug">{s.title}</span>
-                      {s.type === "video" && <span className="ml-auto text-xs opacity-50">📹</span>}
+                      {s.type === "video" && <span className="ml-auto text-xs opacity-50">{"\u{1F4F9}"}</span>}
                     </button>
                   );
                 })}
@@ -272,7 +236,7 @@ export default function ModuleClient({ moduleId }: { moduleId: number }) {
                     className={`w-full py-2.5 rounded-lg text-sm font-medium transition-all duration-300 ${allVisited ? "text-white shadow-sm hover:shadow-md" : "text-gray-400 bg-gray-100 cursor-not-allowed"}`}
                     style={allVisited ? { background: mod.color } : undefined}
                   >
-                    {allVisited ? "Mark Complete ✓" : `Visit all sections (${sectionsVisited.size}/${mod.sections.length})`}
+                    {allVisited ? "Mark Complete \u2713" : `Visit all sections (${sectionsVisited.size}/${mod.sections.length})`}
                   </button>
                 )}
               </div>
@@ -281,9 +245,11 @@ export default function ModuleClient({ moduleId }: { moduleId: number }) {
 
           {/* Main content */}
           <main className="min-w-0">
-            <SlideCarousel slides={mod.slides} color={mod.color} />
-
             <div key={activeSection}>
+              {/* Section slide — auto-synced to the active section */}
+              <SectionSlide src={section.slide} alt={section.title} />
+
+              {/* Section header */}
               <div className="flex items-center gap-3 mb-6">
                 <div className="w-1 h-8 rounded-full" style={{ background: mod.color }} />
                 <h2 className="text-2xl md:text-3xl font-medium" style={{ fontFamily: "'Cormorant Garamond', serif", color: "var(--rewaken-text)" }}>
@@ -291,19 +257,22 @@ export default function ModuleClient({ moduleId }: { moduleId: number }) {
                 </h2>
               </div>
 
+              {/* Video placeholder — only for video sections */}
               {section.type === "video" && section.videoPlaceholder && (
                 <div className="mb-8">
                   <VideoPlaceholder title={section.videoPlaceholder} moduleColor={mod.color} />
                 </div>
               )}
 
+              {/* Content card */}
               <div className="bg-white rounded-xl p-6 md:p-8 shadow-sm border border-black/[0.04] prose-rewaken">
                 {renderContent(section.content)}
               </div>
 
+              {/* Section nav */}
               <div className="flex items-center justify-between mt-8 pt-6 border-t border-black/[0.06]">
                 <button
-                  onClick={() => setActiveSection((p) => Math.max(0, p - 1))}
+                  onClick={() => { setActiveSection((p) => Math.max(0, p - 1)); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
                   disabled={activeSection === 0}
                   className="flex items-center gap-2 text-sm font-medium disabled:opacity-30 hover:opacity-70 transition-opacity"
                   style={{ color: mod.color }}
@@ -314,7 +283,7 @@ export default function ModuleClient({ moduleId }: { moduleId: number }) {
                 <span className="text-xs text-gray-400">{activeSection + 1} / {mod.sections.length}</span>
                 {activeSection < mod.sections.length - 1 ? (
                   <button
-                    onClick={() => setActiveSection((p) => Math.min(mod.sections.length - 1, p + 1))}
+                    onClick={() => { setActiveSection((p) => Math.min(mod.sections.length - 1, p + 1)); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
                     className="flex items-center gap-2 text-sm font-medium hover:opacity-70 transition-opacity"
                     style={{ color: mod.color }}
                   >
@@ -344,7 +313,7 @@ export default function ModuleClient({ moduleId }: { moduleId: number }) {
             <span className="font-medium">waken</span>
             <span className="ml-1">life</span>
           </div>
-          <div className="text-xs text-gray-400 text-center">For educational purposes only — always follow your provider&apos;s instructions</div>
+          <div className="text-xs text-gray-400 text-center">For educational purposes only &mdash; always follow your provider&apos;s instructions</div>
         </div>
       </footer>
     </div>
