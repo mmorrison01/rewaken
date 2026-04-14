@@ -37,6 +37,27 @@ function VideoPlaceholder({ title, moduleColor }: { title: string; moduleColor: 
   );
 }
 
+function YouTubeEmbed({ url }: { url: string }) {
+  const videoId = url.includes("youtu.be/")
+    ? url.split("youtu.be/")[1].split(/[?&#]/)[0]
+    : url.includes("v=")
+    ? url.split("v=")[1].split(/[?&#]/)[0]
+    : "";
+  if (!videoId) return null;
+  return (
+    <div className="mb-8 rounded-xl overflow-hidden shadow-lg" style={{ aspectRatio: "16/9" }}>
+      <iframe
+        src={`https://www.youtube.com/embed/${videoId}`}
+        title="Video"
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+        allowFullScreen
+        className="w-full h-full"
+        style={{ border: 0 }}
+      />
+    </div>
+  );
+}
+
 function SectionSlide({ src, alt }: { src: string; alt: string }) {
   return (
     <div className="mb-8 rounded-xl overflow-hidden shadow-lg bg-white">
@@ -257,12 +278,14 @@ export default function ModuleClient({ moduleId }: { moduleId: number }) {
                 </h2>
               </div>
 
-              {/* Video placeholder — only for video sections */}
-              {section.type === "video" && section.videoPlaceholder && (
+              {/* Video embed or placeholder */}
+              {section.videoUrl ? (
+                <YouTubeEmbed url={section.videoUrl} />
+              ) : section.type === "video" && section.videoPlaceholder ? (
                 <div className="mb-8">
                   <VideoPlaceholder title={section.videoPlaceholder} moduleColor={mod.color} />
                 </div>
-              )}
+              ) : null}
 
               {/* Content card */}
               <div className="bg-white rounded-xl p-6 md:p-8 shadow-sm border border-black/[0.04] prose-rewaken">
