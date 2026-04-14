@@ -239,7 +239,7 @@ export default function ModuleClient({ moduleId }: { moduleId: number }) {
                         )}
                       </span>
                       <span className="leading-snug">{s.title}</span>
-                      {s.type === "video" && <span className="ml-auto text-xs opacity-50">{"\u{1F4F9}"}</span>}
+                      {s.videoUrl && <span className="ml-auto text-xs opacity-50">{"\u{1F4F9}"}</span>}
                     </button>
                   );
                 })}
